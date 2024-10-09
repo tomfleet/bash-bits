@@ -31,11 +31,11 @@ mkdir jsonData && cd jsonData
 #--print artist \
 #--print track \
 #--print duration_string \
-    
+#--print-to-file "%(playlist_index)s - %(title)s - %(duration_string)s" "%(artist)s/%(album)s.json" \
 
 # Downloading the json data of the first track only
 yt-dlp \
-    --print-to-file "%(playlist_index)s - %(title)s - %(duration_string)s" "album.json" \
+    --print-to-file "%(.{playlist_index,title,duration_string})j" "%(artist)s/%(album)s.json" \
     -q \
     --no-warnings \
     --skip-download \
