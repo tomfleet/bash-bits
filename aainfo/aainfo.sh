@@ -25,7 +25,14 @@ debug_echo() {
 
 debug_echo "Retrieving album information..."
 
-mkdir jsonData && cd jsonData
+
+# Remove all files and directories in the current directory
+debug_echo "Removing all files and directories in the current directory..."
+rm -rfd ./*
+if [ $? -ne 0 ]; then
+    echo "Failed to remove files and directories"
+    exit 1
+fi
 
 #--print playlist_index \
 #--print artist \
@@ -33,18 +40,48 @@ mkdir jsonData && cd jsonData
 #--print duration_string \
 #--print-to-file "%(playlist_index)s - %(title)s - %(duration_string)s" "%(artist)s/%(album)s.json" \
 
-# Downloading the json data of the first track only
+
+
+
+# Downloading the json data of the first track only - to get the album title etc
 yt-dlp \
-    --print-to-file "%(.{playlist_index,title,duration_string})j" "%(artist)s/%(album)s.json" \
+    --print-to-file "%(.{artist,album})j" "%(artist)s/%(album)s.json" \
     -q \
     --no-warnings \
+    --playlist-start 1 \
+    --playlist-end 1 \
     --skip-download \
     --no-write-playlist-metafiles \
     --clean-info-json \
     "$1"
 
 if [ $? -ne 0 ]; then
-    echo "yt-dlp command failed"
+    echo "yt-dlp [album info] failed"
+    exit 1
+fi
+
+# Extract artist and album from the JSON file
+json_file=$(find . -name "*.json" | head -n 1)
+artist=$(jq -r '.artist' "$json_file")
+album=$(jq -r '.album' "$json_file")
+
+debug_echo "Artist: $artist"
+debug_echo "Album: $album"
+
+
+# *fast* (flat_playlist) to get the tracklisting.
+yt-dlp \
+    --print-to-file "%(.{playlist_index,title,duration_string})j" "${artist} - ${album}.json" \
+    -q \
+    --no-warnings \
+    --skip-download \
+    --no-write-playlist-metafiles \
+    --clean-info-json \
+    --flat-playlist \
+    "$1"
+
+if [ $? -ne 0 ]; then
+    echo "yt-dlp [tracklist] failed"
     exit 1
 fi
 
