@@ -25,7 +25,6 @@ debug_echo() {
 
 debug_echo "Retrieving album information..."
 
-
 # Remove all files and directories in the current directory
 debug_echo "Removing all files and directories in the current directory..."
 rm -rfd ./*
@@ -34,14 +33,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-#--print playlist_index \
-#--print artist \
-#--print track \
-#--print duration_string \
-#--print-to-file "%(playlist_index)s - %(title)s - %(duration_string)s" "%(artist)s/%(album)s.json" \
 
-
-
+# the joys of scope? I dunno - flat-playlist doesn't get the scope of artist or album?
+# so we call the first track alone of the album / playlist, to get "album" artist, and album name
 
 # Downloading the json data of the first track only - to get the album title etc
 yt-dlp \
@@ -60,7 +54,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Extract artist and album from the JSON file
+# then we pull these *back out of* the json file...
 json_file=$(find . -name "*.json" | head -n 1)
 artist=$(jq -r '.artist' "$json_file")
 album=$(jq -r '.album' "$json_file")
@@ -68,6 +62,7 @@ album=$(jq -r '.album' "$json_file")
 debug_echo "Artist: $artist"
 debug_echo "Album: $album"
 
+# to use them in the output template for the-"fkat-playlist" call to yt-dlp
 
 # *fast* (flat_playlist) to get the tracklisting.
 yt-dlp \
@@ -89,54 +84,4 @@ timestamp=$(date +"%Y%m%d%H%M%S")
 json_file="album_info_$timestamp.json"
 
 exit
-
-
-# Assuming yt-dlp writes the JSON file to the current directory
-mv *.info.json "$json_file"
-
-
-
-exit 0
-
-title=$(jq -r '.title' "$json_file")
-debug_echo "Album title: $title"
-debug_echo "Finding images with equal height and width..."
-images=$(jq -r '.thumbnails[] | select(.height != null and .width != null and .height == .width) | "\(.url) \(.height)x\(.width)"' "$json_file")
-if [ -z "$images" ]; then
-    debug_echo "No images found with equal height and width."
-else
-    debug_echo "Images with equal height and width:"
-    debug_echo "$images"
-    largest_image=$(echo "$images" | grep -E "maxresdefault|1200x1200|640x640|544x544" | head -n 1 | awk '{print $1}')
-    if [ -n "$largest_image" ]; then 
-        debug_echo "Downloading the largest image: $largest_image"
-        curl "$largest_image" -s --output "albumart.file"
-        if [ $? -ne 0 ]; then
-            echo "curl command failed"
-            exit 1
-        fi
-        convert albumart.file albumart.jpg  #convert to jpg, we should be *some* valid image file if here
-
-        if [ $? -ne 0 ]; then
-            echo "convert command failed" 
-            exit 1
-        fi
-        rm albumart.file #tidying up
-    else
-        debug_echo "No suitable image found."
-    fi
-fi
-
-#jesus that was an ordeal.
-
-jp2a --colors --width=80  albumart.jpg > asciiart.txt
-if [ $? -ne 0 ]; then
-    echo "jp2a command failed"
-    exit 1
-fi
-
-debug_echo "Album art converted to ASCII art and saved as asciiart.txt"
-printf "\n"
-cat asciiart.txt
-
-
+#we are so done here
