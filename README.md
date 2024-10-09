@@ -1,6 +1,6 @@
 # Bash Bits
 
-#### some bad ideas done in bad bash script.
+#### some bad ideas done in bad bash script
 
 * #### [aaart](https://https://github.com/tomfleet/bash-bits/tree/main/aaart) - ascii album art covers for YouTube (YouTube Music)
 
