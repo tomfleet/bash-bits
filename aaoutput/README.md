@@ -2,7 +2,8 @@
 
 ### "some glue"
 
-![alt text](Screenshot 2024-10-10 032254.png)
+![alt text](<Screenshot 2024-10-10 032254.png>)
+
 
 **$./aaoutput.sh https://music.youtube.com/playlist?list=OLAK5uy_kT5U1hmlekoeiVxa_4UkydLojz-3ejaQU&si=ArH6DyOnAZQF7cNw**
 
