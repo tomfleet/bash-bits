@@ -76,7 +76,7 @@ fi
 
 #jesus that was an ordeal.
 
-jp2a --colors --width=80  albumart.jpg > asciiart.txt
+jp2a --colors --width=64 --fill --clear -b albumart.jpg > asciiart.txt
 if [ $? -ne 0 ]; then
     echo "jp2a command failed"
     exit 1
