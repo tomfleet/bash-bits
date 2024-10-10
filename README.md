@@ -2,9 +2,9 @@
 
 #### some bad ideas done in bad bash script
 
-* #### [aaart](https://github.com/tomfleet/bash-bits/tree/main/aaart) - ascii album art covers for YouTube (YouTube Music)
+* #### [aaart](https://github.com/tomfleet/bash-bits/tree/main/ascii-art_stuff/aaart) - ascii album art covers for YouTube (YouTube Music)
 
-![alt text](aaart/assets/cap1.gif)
+![alt text](/ascii-art_stuff/aaart/assets/cap1.gif)
 
 
 * #### aainfo - ascii album info - tracklisting /album data (WIP)
