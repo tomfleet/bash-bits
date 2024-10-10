@@ -62,8 +62,12 @@ album=$(jq -r '.album' "$json_file")
 debug_echo "Artist: $artist"
 debug_echo "Album: $album"
 
-echo "{\n"artist": " | cat - "$json_file" > temp && mv temp "$json_file"}
-echo "File: $json_file"
+#echo "{\n"artist": " | cat - "$json_file" > temp && mv temp "$json_file"}
+echo "{" >> "$json_file"
+echo "\"artist\": \"$artist\"," >> "$json_file"
+echo "\"album\": \"$album\"," >> "$json_file"
+echo "\"tracks:\" [\n" | tee >> "$json_file"
+#echo "File: $json_file"
 
 # to use them in the output template for the-"fkat-playlist" call to yt-dlp
 
@@ -83,7 +87,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "}}" >> "$file"
+echo "}" >> "$json_file"
 
 timestamp=$(date +"%Y%m%d%H%M%S")
 json_file="album_info_$timestamp.json"
