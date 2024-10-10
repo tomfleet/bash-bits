@@ -39,7 +39,7 @@ fi
 
 # Downloading the json data of the first track only - to get the album title etc
 yt-dlp \
-    --print-to-file "%(.{artist,album})j" "%(artist)s/%(album)s.json" \
+    --print-to-file "%(.{artist,album})j" "%(artist)s - %(album)s.json" \
     -q \
     --no-warnings \
     --playlist-start 1 \
@@ -62,11 +62,14 @@ album=$(jq -r '.album' "$json_file")
 debug_echo "Artist: $artist"
 debug_echo "Album: $album"
 
+echo "{\n"artist": " | cat - "$json_file" > temp && mv temp "$json_file"}
+echo "File: $json_file"
+
 # to use them in the output template for the-"fkat-playlist" call to yt-dlp
 
 # *fast* (flat_playlist) to get the tracklisting.
 yt-dlp \
-    --print-to-file "%(.{playlist_index,title,duration_string})j" "${artist} - ${album}.json" \
+    --print-to-file "%(.{playlist_index,title,duration_string})j," "${artist} - ${album}.json" \
     -q \
     --no-warnings \
     --skip-download \
@@ -79,6 +82,8 @@ if [ $? -ne 0 ]; then
     echo "yt-dlp [tracklist] failed"
     exit 1
 fi
+
+echo "}}" >> "$file"
 
 timestamp=$(date +"%Y%m%d%H%M%S")
 json_file="album_info_$timestamp.json"
